@@ -1,12 +1,14 @@
 import re
+import time
+import nltk
+import torch
+import logging
+import pandas as pd
 import streamlit as st
 from newspaper import Article
-from transformers import pipeline
-import torch
-import pandas as pd
-import logging
-import nltk
 from nltk.tokenize import sent_tokenize
+from transformers import pipeline, EncoderDecoderModel, BertTokenizer
+
 nltk.download('punkt_tab')
 nltk.download('punkt')
 
@@ -89,25 +91,12 @@ def clean_text(text):
     double_space_pattern = re.compile(r'\s\s+')
     header_pattern = re.compile(r'^.*?--\s?', re.IGNORECASE)
     video_pattern = re.compile(r'VIDEO:.*?(?:\.\s|$)', re.IGNORECASE)
-
-    # Hapus URL
     text = url_pattern.sub('', text)
-
-    # Hapus hashtag
     text = hashtag_pattern.sub('', text)
-
-    # Cek jika ada '--' dalam 40 karakter pertama
     if '--' in text[:40]:
-        # Hapus header sebelum '--'
         text = header_pattern.sub('', text).strip()
-
-    # Hapus frasa "VIDEO:" hingga titik
     text = video_pattern.sub('', text)
-
-    # Hapus double space
     text = double_space_pattern.sub(' ', text)
-
-    # Trim leading and trailing spaces
     text = text.strip()
 
     return text
@@ -120,39 +109,86 @@ def prepare_qa(input_text,user_question):
     return res['answer']
 
 ### SENTIMENT ###
-def sentiment(input_text):
-    classifier = pipeline("text-classification", model="./model/text_classification", device = device)
-    def split_into_sentences(text):
-        # Tokenize the text into sentences
-        sentences = sent_tokenize(text)
-        return sentences
-    logging.info(input_text)
-    splitted_text = split_into_sentences(input_text)
-    if len(splitted_text)>1:
-        avg_len = sum([len(i) for i in splitted_text])/len(splitted_text)
-        splitted_text_filtered = [i for i in splitted_text if len(i)>=int(avg_len)]
-
-        res = classifier(splitted_text_filtered)
-        df = pd.DataFrame(res)
-        sentiment = df['label'].value_counts().index[0] # ambil sentimen yang dominan
-        score = df.groupby('label').mean().loc[sentiment]['score'] # rata2 skor dari sentiment dominan
-
-    else:
-        res = classifier(input_text)
-        sentiment = res[0]['label']
-        score = res[0]['score']
-    return {'sentiment': sentiment, 'score': score}
+def sentiment(input_text,model_name):
+    start_time = time.time()
+    if model_name=='Sentiment-1':
+        classifier = pipeline("text-classification", model="./model/text_classification/Sentiment-1", device = device)
+        mapper_label = {"LABEL_0":"Negative","LABEL_1":"Positive"}
+        output = classifier(input_text)[0]
+        output_label = output['label']
+        print(f"output: {output}")
+        sentiment_result = mapper_label[output_label]
+        score = output['score']
+        runtime = time.time() - start_time
+        return {'sentiment': sentiment_result.capitalize(), 'score': score, 'runtime':runtime}
+    elif model_name=='Sentiment-2':
+        classifier = pipeline("text-classification", model="./model/text_classification/Sentiment-2", device = device)
+        mapper_label = {"LABEL_0":"Neutral","LABEL_1":"Positive","LABEL_2":"Negative"}
+        output = classifier(input_text)[0]
+        output_label = output['label']
+        print(f"output: {output}")
+        sentiment_result = mapper_label[output_label]
+        score = output['score']
+        runtime = time.time() - start_time
+        return {'sentiment': sentiment_result.capitalize(), 'score': score, 'runtime':runtime}
+    elif model_name=='Sentiment-3':
+        classifier = pipeline("text-classification", model="./model/text_classification/Sentiment-3", device = device)
+        mapper_label = {"LABEL_0":"Negative","LABEL_1":"Positive"}
+        output = classifier(input_text)[0]
+        output_label = output['label']
+        print(f"output: {output}")
+        sentiment_result = mapper_label[output_label]
+        score = output['score']
+        runtime = time.time() - start_time
+        return {'sentiment': sentiment_result.capitalize(), 'score': score, 'runtime':runtime}
+    elif model_name=='Sentiment-4':
+        classifier = pipeline("text-classification", model="./model/text_classification/X_Sentiment-3", device = device)
+        output = classifier(input_text)[0]
+        print(f"output: {output}")
+        sentiment_result = output['label']
+        score = output['score']
+        runtime = time.time() - start_time
+        return {'sentiment': sentiment_result.capitalize(), 'score': score, 'runtime':runtime}
 
 ### SUMMARIZATION ###
-def summarizer(input_text, out_max_length=516):
-    summ = pipeline("text2text-generation", model="./model/text_summarization", max_length=out_max_length, device = device)
-    res = summ(clean_text(input_text))
-    res = res[0]['generated_text']
-    logging.info("length input "+str(len(input_text)))
-    # length = int(round(len(input_text)*0.5))
-    logging.info("length summarized "+str(len(res)))
-    return res
 
-def translate_en2id(input_text):
-    # commands here
-    return input_text
+def x_summarizer2(input_text):
+    model = EncoderDecoderModel.from_pretrained("anggari/bert2bertnews")
+    tokenizer = BertTokenizer.from_pretrained("cahya/bert2bert-indonesian-summarization")
+    input_ids = tokenizer.encode(input_text, return_tensors='pt')
+    if len(input_ids[0])>512:
+        input_ids = torch.Tensor(input_ids[0][:512])
+        input_ids = torch.reshape(input_ids, (1, 512))
+    summary_ids = model.generate(input_ids,
+                min_length=20,
+                max_length=128*2,
+                num_beams=10,
+                repetition_penalty=2.5,
+                length_penalty=1.0,
+                early_stopping=True,
+                no_repeat_ngram_size=2,
+                use_cache=True,
+                do_sample = True,
+                temperature = 0.8,
+                top_k = 50,
+                top_p = 0.95)
+    summary_text = tokenizer.decode(summary_ids[0], skip_special_tokens=True)
+    return summary_text
+
+
+def summarizer(input_text, model_name):
+    start_time = time.time()
+    if model_name=='Summarizer-1':
+        summ = pipeline("text2text-generation", model="./model/text_summarization/summarization-1", max_length=512, device = device)
+        res = summ(clean_text(input_text))
+        res = res[0]['generated_text']
+        logging.info("length input "+str(len(input_text)))
+        logging.info("length summarized "+str(len(res)))
+        runtime = time.time() - start_time
+        return {"result":res, "runtime":runtime}
+    elif model_name=='Summarizer-2':
+        res = x_summarizer2(input_text)        
+        logging.info("length input "+str(len(input_text)))
+        logging.info("length summarized "+str(len(res)))
+        runtime = time.time() - start_time
+        return {"result":res, "runtime":runtime}

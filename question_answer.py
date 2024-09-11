@@ -1,5 +1,6 @@
+import time
 import streamlit as st
-from models import get_news_from_url, news_info_template, cleaning_multiline
+from models import get_news_from_url, news_info_template, cleaning_multiline, prepare_qa
 
 # session
 if "news" not in st.session_state:
@@ -37,8 +38,10 @@ for k,v in st.session_state.items():
 if prompt := st.chat_input("Ask something"):
     st.chat_message("user").markdown(prompt)
     st.session_state.messages.append({"role": "user", "content": prompt})
-
-    response = f"**Answer:** {prompt}"
+    start_time = time.time()
+    answer = prepare_qa(st.session_state["news"], prompt)
+    runtime = round(time.time()-start_time,2)
+    response = f"**Answer:** {answer}\n[runtime: {runtime}s]"
     with st.chat_message("assistant"):
         st.markdown(response)
     st.session_state.messages.append({"role": "assistant", "content": response})
