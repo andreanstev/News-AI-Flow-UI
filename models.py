@@ -102,19 +102,22 @@ def clean_text(text):
     return text
 
 ### QA ###
+qa = pipeline("question-answering", model="./model/question_answering", device = device)
 def prepare_qa(input_text,user_question):
-    qa = pipeline("question-answering", model="./model/question_answering", device = device)
     res = qa(question=user_question, context=clean_text(input_text))
     logging.info(str(res['answer']))
     return res['answer']
 
 ### SENTIMENT ###
+classifier1 = pipeline("text-classification", model="./model/text_classification/Sentiment-1", device = device)
+classifier2 = pipeline("text-classification", model="./model/text_classification/Sentiment-2", device = device)
+classifier3 = pipeline("text-classification", model="./model/text_classification/Sentiment-3", device = device)
+# classifier4 = pipeline("text-classification", model="./model/text_classification/Sentiment-4", device = device)
 def sentiment(input_text,model_name):
     start_time = time.time()
     if model_name=='Sentiment-1':
-        classifier = pipeline("text-classification", model="./model/text_classification/Sentiment-1", device = device)
         mapper_label = {"LABEL_0":"Negative","LABEL_1":"Positive"}
-        output = classifier(input_text)[0]
+        output = classifier1(input_text)[0]
         output_label = output['label']
         print(f"output: {output}")
         sentiment_result = mapper_label[output_label]
@@ -122,9 +125,8 @@ def sentiment(input_text,model_name):
         runtime = time.time() - start_time
         return {'sentiment': sentiment_result.capitalize(), 'score': score, 'runtime':runtime}
     elif model_name=='Sentiment-2':
-        classifier = pipeline("text-classification", model="./model/text_classification/Sentiment-2", device = device)
         mapper_label = {"LABEL_0":"Neutral","LABEL_1":"Positive","LABEL_2":"Negative"}
-        output = classifier(input_text)[0]
+        output = classifier2(input_text)[0]
         output_label = output['label']
         print(f"output: {output}")
         sentiment_result = mapper_label[output_label]
@@ -132,29 +134,26 @@ def sentiment(input_text,model_name):
         runtime = time.time() - start_time
         return {'sentiment': sentiment_result.capitalize(), 'score': score, 'runtime':runtime}
     elif model_name=='Sentiment-3':
-        classifier = pipeline("text-classification", model="./model/text_classification/Sentiment-3", device = device)
         mapper_label = {"LABEL_0":"Negative","LABEL_1":"Positive"}
-        output = classifier(input_text)[0]
+        output = classifier3(input_text)[0]
         output_label = output['label']
         print(f"output: {output}")
         sentiment_result = mapper_label[output_label]
         score = output['score']
         runtime = time.time() - start_time
         return {'sentiment': sentiment_result.capitalize(), 'score': score, 'runtime':runtime}
-    elif model_name=='Sentiment-4':
-        classifier = pipeline("text-classification", model="./model/text_classification/X_Sentiment-3", device = device)
-        output = classifier(input_text)[0]
-        print(f"output: {output}")
-        sentiment_result = output['label']
-        score = output['score']
-        runtime = time.time() - start_time
-        return {'sentiment': sentiment_result.capitalize(), 'score': score, 'runtime':runtime}
+    # elif model_name=='Sentiment-4':
+    #     output = classifier4(input_text)[0]
+    #     print(f"output: {output}")
+    #     sentiment_result = output['label']
+    #     score = output['score']
+    #     runtime = time.time() - start_time
+    #     return {'sentiment': sentiment_result.capitalize(), 'score': score, 'runtime':runtime}
 
 ### SUMMARIZATION ###
-
+model = EncoderDecoderModel.from_pretrained("anggari/bert2bertnews")
+tokenizer = BertTokenizer.from_pretrained("cahya/bert2bert-indonesian-summarization")
 def x_summarizer2(input_text):
-    model = EncoderDecoderModel.from_pretrained("anggari/bert2bertnews")
-    tokenizer = BertTokenizer.from_pretrained("cahya/bert2bert-indonesian-summarization")
     input_ids = tokenizer.encode(input_text, return_tensors='pt')
     if len(input_ids[0])>512:
         input_ids = torch.Tensor(input_ids[0][:512])
@@ -175,11 +174,10 @@ def x_summarizer2(input_text):
     summary_text = tokenizer.decode(summary_ids[0], skip_special_tokens=True)
     return summary_text
 
-
+summ = pipeline("text2text-generation", model="./model/text_summarization/summarization-1", max_length=512, device = device)
 def summarizer(input_text, model_name):
     start_time = time.time()
     if model_name=='Summarizer-1':
-        summ = pipeline("text2text-generation", model="./model/text_summarization/summarization-1", max_length=512, device = device)
         res = summ(clean_text(input_text))
         res = res[0]['generated_text']
         logging.info("length input "+str(len(input_text)))

@@ -9,8 +9,8 @@ def get_model_desc(model_name):
         desc = "anggari/distil_news_finetune - F1: 0.67; Accuracy: 0.99"
     elif model_name=="Sentiment-3":
         desc = "anggari/distil_news_finetune2 - F1: 0.96; Accuracy: 0.94"
-    elif model_name=="Sentiment-4":
-        desc = "cardiffnlp/twitter-roberta-base-sentiment-latest"
+    # elif model_name=="Sentiment-4":
+    #     desc = "cardiffnlp/twitter-roberta-base-sentiment-latest"
     else:
         desc = "no selected model"     
     return desc
@@ -25,7 +25,7 @@ if "sentiment" not in st.session_state:
 st.title("😐 Sentiment Analysis")
 
 option = st.selectbox("Select your model",
-                    ("-","Sentiment-1", "Sentiment-2", "Sentiment-3","Sentiment-4"),)
+                    ("-","Sentiment-1", "Sentiment-2", "Sentiment-3",))
 
 desc = get_model_desc(option)
 if option!='-':
