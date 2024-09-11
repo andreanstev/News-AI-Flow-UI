@@ -12,12 +12,14 @@ News analysis in field of News QnA, Sentiment, and Summary using Streamlit as us
 **Install Requirements** \
 `$ pip install -r requirements.txt`
 
+**Get Models** \
+`$ python save_models.py`
+
 **Run program** \
 `$ streamlit run app_inferencing.py`
 <br><br>
 
 ----
-
 <caption>Question and Answer</caption>
 
 ![QnA](./images/qna.jpeg)
