@@ -20,14 +20,48 @@ News analysis in field of News QnA, Sentiment, and Summary using Streamlit as us
 <br><br>
 
 ----
-<caption>Question and Answer</caption>
+<h3>How to use News Analysis Toolkit?</h3>
 
-![QnA](./images/qna.jpeg)
+<caption><b>Question and Answer</b></caption>
 
-<caption>Sentiment Analysis</caption>
+Input: Text or News URL\
+Steps:\
+1. Enter text/URL in input box
+2. Click on `Submit` button
+3. Begin your conversation with submitted news in chat box on below of page
 
-![Sentiment Analysis](./images/sentiment.jpeg)
+Check the video here
+[![QnA](./images/qna.jpeg)](./videos/QnA.mp4)
 
-<caption>Summarization</caption>
+---
 
-![Summarization](./images/summarization.jpeg)
+<caption><b>Sentiment Analysis</b></caption>
+
+Input: Text or News URL\
+Steps: 
+1. Enter text/URL in input box
+2. Click on `Submit` button
+3. News Info and Sentiment will be provided
+
+[![Sentiment Analysis](./images/sentiment.jpeg)](./videos/Sentiment_Analysis.mp4)
+
+---
+
+<caption><b>Summarization</b></caption>
+
+Input: Text or News URL\
+Steps: 
+1. Enter text/URL in input box
+2. Click on `Submit` button
+3. News Info and News Summary will be provided
+
+[![Summarization](./images/summarization.jpeg)](./videos/Summarization.mp4)
+
+---
+
+## Future Improvement
+Models \
+Using model that support multi language.
+
+News Toolkit \
+Equipped with ASR (Automatic Speech Recognition) feature as input method options.
