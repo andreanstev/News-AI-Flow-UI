@@ -22,6 +22,10 @@ An integrated AI Pipeline for News Analysis, simplifies traditional news consump
 <br><br>
 
 ----
+<h3>Model Documentation</h3>
+https://github.com/andreanstev/News-AI-Flow
+
+----
 <h3>How to use News Analysis Toolkit?</h3>
 
 <caption><b>Question and Answer</b></caption>
