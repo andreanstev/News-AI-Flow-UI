@@ -1,5 +1,7 @@
-# News-Analysis-Toolkit-Using-Streamlit
-News analysis in field of News QnA, Sentiment, and Summary using Streamlit as user interface
+# News AI Flow
+An integrated AI Pipeline for News Analysis, simplifies traditional news consumption with an AI driven solution.
+
+<h3>Setup Instruction</h3>
 
 **Clone git** \
 `$ git clone https://github.com/Ishaq101/News-Analysis-Toolkit-Using-Streamlit.git` \
@@ -25,7 +27,7 @@ News analysis in field of News QnA, Sentiment, and Summary using Streamlit as us
 <caption><b>Question and Answer</b></caption>
 
 Input: Text or News URL\
-Steps:\
+Steps:
 1. Enter text/URL in input box
 2. Click on `Submit` button
 3. Begin your conversation with submitted news in chat box on below of page
