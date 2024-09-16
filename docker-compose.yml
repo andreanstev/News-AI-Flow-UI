@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  hf_streamlit:
+    image: andreanliu/huggingface_streamlit:1.0.0
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    volumes:
+      - .:/app
+    ports:
+      - 8501:8501
