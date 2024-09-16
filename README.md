@@ -33,7 +33,7 @@ Steps:
 3. Begin your conversation with submitted news in chat box on below of page
 
 Check the video here
-[![QnA](./images/qna.jpeg)](./videos/QnA.mp4)
+[![QnA](./images/qa.PNG)](./videos/QnA.mp4)
 
 ---
 
@@ -45,7 +45,7 @@ Steps:
 2. Click on `Submit` button
 3. News Info and Sentiment will be provided
 
-[![Sentiment Analysis](./images/sentiment.jpeg)](./videos/Sentiment_Analysis.mp4)
+[![Sentiment Analysis](./images/sentiment.PNG)](./videos/Sentiment_Analysis.mp4)
 
 ---
 
@@ -57,7 +57,7 @@ Steps:
 2. Click on `Submit` button
 3. News Info and News Summary will be provided
 
-[![Summarization](./images/summarization.jpeg)](./videos/Summarization.mp4)
+[![Summarization](./images/summarization.PNG)](./videos/Summarization.mp4)
 
 ---
 
